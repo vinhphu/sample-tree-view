@@ -1,11 +1,11 @@
 "use strict";
 
+require("core-js/modules/web.dom-collections.iterator.js");
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
-require("core-js/modules/web.dom-collections.iterator.js");
 
 require("core-js/modules/es.object.assign.js");
 
@@ -22,12 +22,6 @@ var _Transition = _interopRequireDefault(require("./Transition"));
 var _lab = require("@material-ui/lab");
 
 var _lodash = _interopRequireDefault(require("lodash"));
-
-var _SearchContext = require("../progressive-search/SearchContext");
-
-var _ProcedureCodeResponse = require("../../features/doctor-search/model/ProcedureCodeResponse");
-
-var _Checkbox = _interopRequireDefault(require("@material-ui/core/Checkbox"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -86,17 +80,14 @@ const SmarterTreeView = props => {
   const {
     data,
     onClickOption,
-    highlight,
-    isSelected,
-    isExpanded
+    highlight
   } = props;
-  const [, setSearch] = (0, _react.useContext)(_SearchContext.SearchContext);
   const classes = useStyles();
 
   const renderTree = function renderTree() {
     let nodes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : data;
     return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, nodes.map((node, index) => {
-      const exp = new _ProcedureCodeResponse.NodeDetails();
+      console.log('Data nodes ', node);
       return /*#__PURE__*/_react.default.createElement(StyledTreeItem, {
         id: node.nodeDetails.icd10Code,
         key: node.nodeDetails.icd10Code,
@@ -105,14 +96,6 @@ const SmarterTreeView = props => {
       }, Array.isArray(node.children) && node.children.length !== 0 ? renderTree(node.children) : null);
     }));
   };
-
-  const hanldeOnchangeCheckbox = event => {
-    console.log(event.target.checked);
-  };
-
-  const [selectedItem, setSelectedItem] = (0, _react.useState)('');
-  (0, _react.useEffect)(() => {// setSelectedItem('A79');
-  }, [selectedItem]);
 
   const computeLabel = nodeDetail => {
     const {
@@ -124,12 +107,8 @@ const SmarterTreeView = props => {
     let result = /*#__PURE__*/_react.default.createElement("div", {
       onClick: event => {
         event.preventDefault();
-        setSearch("".concat(icd10Code, " - ").concat(icd10Description));
       }
-    }, /*#__PURE__*/_react.default.createElement(_Checkbox.default // checked={icd10Code == selectedItem ? true : false}
-    , {
-      onChange: hanldeOnchangeCheckbox
-    }), /*#__PURE__*/_react.default.createElement("span", {
+    }, /*#__PURE__*/_react.default.createElement("span", {
       className: classes.truncated,
       style: {
         width: '100%'
@@ -142,7 +121,6 @@ const SmarterTreeView = props => {
       result = /*#__PURE__*/_react.default.createElement("div", {
         onClick: event => {
           event.preventDefault();
-          setSearch("".concat(icd10Code, " - ").concat(icd10Description));
         }
       }, /*#__PURE__*/_react.default.createElement("span", {
         className: classes.truncated
@@ -175,21 +153,19 @@ const SmarterTreeView = props => {
   }, [data]);
   return /*#__PURE__*/_react.default.createElement(_lab.TreeView, {
     className: classes.root,
-    defaultExpanded: isExpanded ? getNodeIds(data, []) : ''
+    defaultCollapseIcon: /*#__PURE__*/_react.default.createElement(_icons.MinusSquare, null),
+    defaultExpandIcon: /*#__PURE__*/_react.default.createElement(_icons.PlusSquare, null),
+    defaultExpanded: getNodeIds(data, [])
   }, renderTree(data));
 };
 
 SmarterTreeView.propTypes = {
   data: _propTypes.default.array,
   highlight: _propTypes.default.string,
-  onClickOption: _propTypes.default.func,
-  isExpanded: _propTypes.default.bool,
-  isSelected: _propTypes.default.bool
+  onClickOption: _propTypes.default.func
 };
 SmarterTreeView.defaultProps = {
   data: [],
-  isExpanded: true,
-  isSelected: false,
   highlight: '',
   onClickOption: () => {}
 };

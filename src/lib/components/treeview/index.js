@@ -1,15 +1,11 @@
-import React, { useContext, useEffect , useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
 import { MinusSquare, PlusSquare } from '../icons';
 import Transition from './Transition';
 import { TreeView, TreeItem } from '@material-ui/lab';
 import _ from 'lodash';
-import { SearchContext } from '../progressive-search/SearchContext';
-import { NodeDetails } from '../../features/doctor-search/model/ProcedureCodeResponse';
-import Checkbox from '@material-ui/core/Checkbox';
-
-const StyledTreeItem = withStyles((theme)  => ({
+const StyledTreeItem = withStyles((theme) => ({
   iconContainer: {
     '& .close': {
       opacity: 0.3,
@@ -55,8 +51,8 @@ const useStyles = makeStyles( (theme) => ({
 }));
 
 const SmarterTreeView = props => {
-  const { data, onClickOption, highlight , isSelected, isExpanded } = props
-  const [, setSearch] = useContext(SearchContext)
+  const { data, onClickOption, highlight } = props
+  
   const classes = useStyles();
 
   const renderTree = (nodes = data) => {
@@ -64,7 +60,8 @@ const SmarterTreeView = props => {
     return <>
       {
         nodes.map((node, index) => {
-          const exp = new NodeDetails()
+          console.log('Data nodes ', node)
+          
           return <StyledTreeItem
             id={node.nodeDetails.icd10Code}
             key={node.nodeDetails.icd10Code}
@@ -77,14 +74,6 @@ const SmarterTreeView = props => {
       }
     </>
   }
-  const hanldeOnchangeCheckbox = (event) =>{
-    console.log(event.target.checked)
-  }
-
-  const [selectedItem, setSelectedItem] = useState('');
-  useEffect(() => {
-    // setSelectedItem('A79');
-  }, [selectedItem]);
 
   const computeLabel = (nodeDetail) => {
     const { icd10Code, icd10Description } = nodeDetail;
@@ -93,13 +82,9 @@ const SmarterTreeView = props => {
       <div
         onClick={event => {
           event.preventDefault()
-          setSearch(`${icd10Code} - ${icd10Description}`)
+    
         }}
-      ><Checkbox 
-          // checked={icd10Code == selectedItem ? true : false}
-          onChange={hanldeOnchangeCheckbox}
-      />
-        <span className={classes.truncated} style={{width: '100%'}}>{icd10Code} - {icd10Description}</span></div>
+      ><span className={classes.truncated} style={{width: '100%'}}>{icd10Code} - {icd10Description}</span></div>
     if (highlightIndex !== -1 && !_.isEmpty(highlight)) {
       const previous = icd10Description.slice(0, highlightIndex)
       const after = icd10Description.slice(highlightIndex + highlight.length, icd10Description.length)
@@ -107,7 +92,7 @@ const SmarterTreeView = props => {
         <div
           onClick={event => {
             event.preventDefault()
-            setSearch(`${icd10Code} - ${icd10Description}`)
+            
           }}
         >
           <span className={classes.truncated}>{icd10Code} - {previous}</span><span className={classes.highlight}>{highlight}</span><span className={classes.truncated}>{after}</span>
@@ -135,7 +120,9 @@ const SmarterTreeView = props => {
   return (
     <TreeView
       className={classes.root}
-      defaultExpanded={isExpanded ? getNodeIds(data,[]) : ''}
+      defaultCollapseIcon={<MinusSquare />}
+      defaultExpandIcon={<PlusSquare />}
+      defaultExpanded={getNodeIds(data,[])}
     >
       {renderTree(data)}
     </TreeView>
@@ -144,16 +131,11 @@ const SmarterTreeView = props => {
 SmarterTreeView.propTypes = {
   data: PropTypes.array,
   highlight: PropTypes.string,
-  onClickOption: PropTypes.func,
-  isExpanded: PropTypes.bool,
-  isSelected: PropTypes.bool
-
+  onClickOption: PropTypes.func
 }
 
 SmarterTreeView.defaultProps = {
   data: [],
-  isExpanded: true,
-  isSelected: false,
   highlight: '',
   onClickOption: () => {}
 }

@@ -1,3 +1,3 @@
 import SmarterTreeView from './components/treeview'
 
-export const SmarterTreeView
+export {SmarterTreeView}
